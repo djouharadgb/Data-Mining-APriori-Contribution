@@ -55,10 +55,11 @@
 \usepackage{hyperref}
 \usepackage{cleveref}
 \hypersetup{
-  colorlinks=true,
-  linkcolor=darkblue,
-  citecolor=darkblue,
-  urlcolor=darkblue
+  colorlinks=false,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=black,
+  pdfborder={0 0 0}
 }
 
 % ── Section styling ──────────────────────────────────────────
@@ -69,25 +70,25 @@
 \usepackage{footmisc}
 \usepackage{setspace}
 
-% ── Colors ───────────────────────────────────────────────────
-\definecolor{darkblue}{RGB}{23,55,94}
-\definecolor{medblue}{RGB}{46,117,182}
-\definecolor{lightblue}{RGB}{222,234,246}
-\definecolor{lightgray}{RGB}{242,242,242}
-\definecolor{accentgray}{RGB}{180,180,180}
-\definecolor{speargreen}{RGB}{26,150,65}
+% ── Colors (black-only mode) ─────────────────────────────────
+\definecolor{darkblue}{RGB}{0,0,0}
+\definecolor{medblue}{RGB}{0,0,0}
+\definecolor{lightblue}{RGB}{240,240,240}
+\definecolor{lightgray}{RGB}{245,245,245}
+\definecolor{accentgray}{RGB}{120,120,120}
+\definecolor{speargreen}{RGB}{0,0,0}
 
 % ── Section title formatting ──────────────────────────────────
 \titleformat{\section}
-  {\color{darkblue}\large\bfseries\scshape}
-  {\thesection.}{0.5em}{}[{\color{medblue}\titlerule[0.5pt]}]
+  {\large\bfseries\scshape}
+  {\thesection.}{0.5em}{}[{\titlerule[0.5pt]}]
 
 \titleformat{\subsection}
-  {\color{medblue}\normalsize\bfseries}
+  {\normalsize\bfseries}
   {\thesubsection.}{0.5em}{}
 
 \titleformat{\subsubsection}
-  {\color{darkblue}\normalsize\itshape\bfseries}
+  {\normalsize\itshape\bfseries}
   {\thesubsubsection.}{0.5em}{}
 
 \titlespacing*{\section}{0pt}{10pt}{4pt}
@@ -109,11 +110,11 @@
 \tcbset{
   defbox/.style={
     enhanced, breakable,
-    colback=lightblue!40, colframe=medblue,
+    colback=lightgray, colframe=black,
     fonttitle=\bfseries\small, fontupper=\small,
     boxrule=0.5pt, arc=2pt,
     left=4pt, right=4pt, top=3pt, bottom=3pt,
-    title style={colback=medblue, coltext=white}
+    title style={colback=black, coltext=white}
   },
   notebox/.style={
     enhanced, breakable,
@@ -121,7 +122,7 @@
     fontupper=\small\itshape,
     boxrule=0.4pt, arc=2pt,
     left=4pt, right=4pt, top=3pt, bottom=3pt,
-    borderline west={2pt}{0pt}{medblue}
+    borderline west={2pt}{0pt}{black}
   }
 }
 
@@ -139,33 +140,28 @@
 \newcommand{\SW}{\mathit{SW}}
 
 % ── Abstract styling ──────────────────────────────────────────
-\renewcommand{\abstractnamefont}{\bfseries\scshape\color{darkblue}}
+\renewcommand{\abstractnamefont}{\bfseries\scshape}
 \renewcommand{\abstracttextfont}{\small}
 \setlength{\absleftindent}{0pt}
 \setlength{\absrightindent}{0pt}
 
 % ── Title block ───────────────────────────────────────────────
 \title{%
-  {\color{darkblue}\LARGE\bfseries
+  {\LARGE\bfseries
   SPEAR: Streaming Positive-nEgative\\
   Association Rules with\\
   Entropy-Based Regularity}\\[6pt]
-  {\color{medblue}\normalsize\itshape
+  {\normalsize\itshape
   A Unified Framework for Weighted Positive and Negative\\
   Association Rule Mining in Medical Data Streams}
 }
 
 \author{%
-  \textbf{[Author Names]}\\
+  \textbf{Djouhara Deghbar}  \textbf{Nesrine Dekkiche}\\[4pt]
   \small Department of Computer Science\\
-  \small USTHB — University of Science and Technology Houari Boumediene\\
-  \small \texttt{[email@usthb.dz]}
+  \small USTHB --- University of Science and Technology Houari Boumediene
 }
 
-\date{%
-  \small\itshape Submitted to [Journal/Conference Name]\\
-  \today
-}
 
 % ════════════════════════════════════════════════════════════
 \begin{document}
