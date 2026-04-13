@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ──────────────────────────────────────────────────────────────
-# Build and install WNAR-SW as a WEKA plugin
+# Build and install SPEAR as a WEKA plugin
 # ──────────────────────────────────────────────────────────────
 set -e
 
@@ -8,12 +8,12 @@ WEKA_JAR="/home/nesrine/Downloads/weka-3-8-6/weka.jar"
 PLUGIN_DIR="$(cd "$(dirname "$0")" && pwd)"
 SRC_DIR="$PLUGIN_DIR/src"
 BUILD_DIR="$PLUGIN_DIR/build"
-OUT_JAR="$PLUGIN_DIR/WNARSW.jar"
+OUT_JAR="$PLUGIN_DIR/SPEAR.jar"
 
 # WEKA packages directory
-WEKA_PACKAGES="$HOME/wekafiles/packages/WNARSW"
+WEKA_PACKAGES="$HOME/wekafiles/packages/SPEAR"
 
-echo "=== WNAR-SW WEKA Plugin Builder ==="
+echo "=== SPEAR WEKA Plugin Builder ==="
 echo ""
 
 # Check WEKA jar
@@ -27,13 +27,13 @@ fi
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
-echo "[1/3] Compiling WNARSW.java ..."
+echo "[1/3] Compiling SPEAR.java ..."
 javac -source 11 -target 11 \
       -cp "$WEKA_JAR" \
       -d "$BUILD_DIR" \
-      "$SRC_DIR/weka/associations/WNARSW.java"
+      "$SRC_DIR/weka/associations/SPEAR.java"
 
-echo "[2/3] Packaging WNARSW.jar ..."
+echo "[2/3] Packaging SPEAR.jar ..."
 cd "$BUILD_DIR"
 jar cf "$OUT_JAR" weka/
 cd "$PLUGIN_DIR"
@@ -45,15 +45,15 @@ cp "$OUT_JAR" "$WEKA_PACKAGES/"
 # Create Description.props for WEKA package manager
 cat > "$WEKA_PACKAGES/Description.props" << 'EOF'
 # WEKA package descriptor
-PackageName=WNARSW
+PackageName=SPEAR
 Version=1.0.0
 Date=2025-01-01
-Title=WNAR-SW: Weighted Negative Association Rule Mining with Regularity
+Title=SPEAR: Streaming Positive-nEgative Association Rules
 Category=Associations
-Author=WNAR-SW Research Team
-Maintainer=WNAR-SW Research Team
+Author=SPEAR Research Team
+Maintainer=SPEAR Research Team
 License=GPL 3.0
-Description=Weighted Negative Association Rule Mining with Regularity-Aware Sliding Windows for Real-Time Medical Alert Generation
+Description=Streaming Positive-nEgative Association Rules with Entropy-Based Regularity for Medical Alert Generation
 URL=https://example.com
 Depends=weka (>=3.8.0)
 EOF
@@ -66,10 +66,10 @@ echo ""
 echo "To use in WEKA:"
 echo "  1. Restart WEKA"
 echo "  2. Open Explorer -> load medicine_side_effects.arff"
-echo "  3. Associate tab -> Choose -> weka.associations.WNARSW"
+echo "  3. Associate tab -> Choose -> weka.associations.SPEAR"
 echo "  4. Configure thresholds in the GUI and click Start"
 echo ""
 echo "To run from command line:"
-echo "  java -cp \"$WEKA_JAR:$OUT_JAR\" weka.associations.WNARSW \\"
+echo "  java -cp \"$WEKA_JAR:$OUT_JAR\" weka.associations.SPEAR \\"
 echo "       -t ../medicine_side_effects.arff \\"
-echo "       -S 0.02 -N 0.01 -C 0.25 -R 600"
+echo "       -S 0.02 -N 0.01 -C 0.25"
