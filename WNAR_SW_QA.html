@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WNAR-SW — Algorithm Explainer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0c10;
+  --surface: #13131a;
+  --surface2: #1a1a24;
+  --surface3: #21212e;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f0eff5;
+  --text2: #9694aa;
+  --text3: #5a5870;
+  --accent: #a78bfa;
+  --accent2: #7c5cbf;
+  --accent-bg: rgba(167,139,250,0.08);
+  --accent-border: rgba(167,139,250,0.25);
+  --teal: #34d399;
+  --teal-bg: rgba(52,211,153,0.08);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.08);
+  --amber: #fbbf24;
+  --amber-bg: rgba(251,191,36,0.08);
+  --blue: #60a5fa;
+  --blue-bg: rgba(96,165,250,0.08);
+  --font-display: 'DM Serif Display', serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.7;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Grid noise background ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 70% -10%, rgba(124,92,191,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 80%, rgba(52,211,153,0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem 6rem;
+}
+
+/* ── Hero ── */
+.hero {
+  padding: 6rem 0 3.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.hero-tag::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  margin-bottom: 1.25rem;
+  color: var(--text);
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 16px;
+  color: var(--text2);
+  max-width: 560px;
+  line-height: 1.65;
+  margin-bottom: 2.5rem;
+}
+
+.hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  background: var(--surface);
+  letter-spacing: .03em;
+}
+
+.pill.accent { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent); }
+
+/* ── Section ── */
+.section { margin: 4rem 0; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.75rem;
+}
+
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: .08em;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 400;
+  color: var(--text);
+  letter-spacing: -.01em;
+}
+
+.section-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Problem grid ── */
+.prob-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+  gap: 12px;
+}
+
+.prob-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+
+.prob-card:hover { border-color: var(--border2); }
+
+.prob-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--red);
+  opacity: .6;
+}
+
+.prob-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--red-bg);
+  border: 1px solid rgba(248,113,113,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: .85rem;
+  font-size: 15px;
+}
+
+.prob-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: .4rem;
+  letter-spacing: .01em;
+}
+
+.prob-card p {
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.55;
+}
+
+/* ── Ideas tabs ── */
+.tabs-nav {
+  display: flex;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 160px;
+  background: transparent;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all .18s;
+  white-space: nowrap;
+}
+
+.tab-btn:hover { color: var(--text2); background: var(--surface2); }
+.tab-btn.active { background: var(--surface3); color: var(--accent); }
+
+.tab-pane { display: none; animation: fadeUp .25s ease; }
+.tab-pane.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Idea cards ── */
+.idea-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.idea-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: .6rem;
+}
+
+.idea-card > p {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+}
+
+/* weight bars */
+.wbar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.wbar-label { font-size: 13px; color: var(--text); min-width: 140px; }
+
+.wbar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--surface3);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.wbar-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  width: 0;
+  transition: width .9s cubic-bezier(.16,1,.3,1);
+}
+
+.wbar-val { font-family: var(--font-mono); font-size: 12px; color: var(--accent); min-width: 32px; text-align: right; }
+
+/* formula */
+.formula {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 12px 12px 0;
+  padding: 1rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+  margin: 1.25rem 0;
+  line-height: 2;
+}
+
+.formula .cm { color: var(--text3); font-size: 12px; font-family: var(--font-body); }
+
+/* reg ticks */
+.reg-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin: 1.25rem 0;
+}
+
+.reg-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: .75rem; }
+
+.ticks-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.tick {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  font-family: var(--font-mono);
+  transition: all .4s;
+}
+
+.tick.hit { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent); }
+
+.tick-sep { font-size: 10px; color: var(--text3); }
+
+.reg-desc { font-size: 12px; color: var(--text2); margin-top: .75rem; }
+.reg-desc b { color: var(--accent); font-weight: 600; }
+
+.reg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.reg-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: .85rem 1rem;
+  text-align: center;
+}
+
+.reg-box .rb-label { font-size: 11px; color: var(--text3); margin-bottom: .3rem; }
+.reg-box .rb-val { font-family: var(--font-mono); font-size: 16px; font-weight: 500; color: var(--accent); }
+.reg-box .rb-sub { font-size: 11px; color: var(--text3); margin-top: .2rem; }
+
+/* negative tab */
+.neg-rule {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+  padding: .85rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+  text-align: center;
+  margin: 1rem 0;
+  letter-spacing: .02em;
+}
+
+.neg-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 1rem 0;
+}
+
+.neg-stat {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.neg-stat .ns-label { font-size: 11px; color: var(--text3); margin-bottom: .4rem; }
+.neg-stat .ns-val { font-size: 26px; font-weight: 600; color: var(--text); font-family: var(--font-mono); }
+.neg-stat .ns-sub { font-size: 11px; color: var(--text2); margin-top: .2rem; line-height: 1.4; }
+
+/* ── Pipeline ── */
+.pipeline { position: relative; }
+
+.pipe-step {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: .5rem;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: opacity .5s ease, transform .5s ease, border-color .2s;
+}
+
+.pipe-step:hover { border-color: var(--border2); }
+.pipe-step.visible { opacity: 1; transform: translateX(0); }
+
+.pipe-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+
+.pipe-badge.a { background: var(--teal-bg); border: 1px solid rgba(52,211,153,0.25); color: var(--teal); }
+.pipe-badge.b { background: var(--blue-bg); border: 1px solid rgba(96,165,250,0.25); color: var(--blue); }
+.pipe-badge.c { background: var(--accent-bg); border: 1px solid var(--accent-border); color: var(--accent); }
+
+.pipe-content h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: .3rem; }
+.pipe-content p { font-size: 13px; color: var(--text2); line-height: 1.55; }
+
+.pipe-tag {
+  display: inline-block;
+  margin-top: .5rem;
+  font-size: 11px;
+  padding: 3px 10px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 100px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.pipe-connector {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: .15rem 1rem;
+  gap: 6px;
+}
+
+.pipe-line { width: 1px; height: 22px; background: var(--border2); margin-left: 18px; }
+
+/* ── Alert card ── */
+.alert-card {
+  background: var(--surface);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.alert-header {
+  background: var(--red-bg);
+  border-bottom: 1px solid rgba(248,113,113,0.15);
+  padding: .9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-pulse {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: pulse-anim 1.5s infinite;
+}
+
+@keyframes pulse-anim {
+  0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(248,113,113,0.4); }
+  50% { opacity: .7; box-shadow: 0 0 0 5px rgba(248,113,113,0); }
+}
+
+.alert-title { font-size: 13px; font-weight: 600; color: var(--red); letter-spacing: .03em; }
+
+.alert-body { padding: 1.5rem; }
+
+.neg-rule-red {
+  background: rgba(248,113,113,0.06);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: 12px;
+  padding: .85rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--red);
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.alert-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 1.25rem;
+}
+
+.alert-stat {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: .75rem .9rem;
+}
+
+.alert-stat .as-l { font-size: 11px; color: var(--text3); margin-bottom: .3rem; }
+.alert-stat .as-v { font-size: 17px; font-weight: 600; color: var(--text); font-family: var(--font-mono); }
+
+.sev-label { font-size: 12px; color: var(--text2); margin-bottom: .5rem; display: flex; justify-content: space-between; }
+.sev-label span { font-family: var(--font-mono); color: var(--amber); }
+
+.sev-track {
+  height: 8px;
+  background: var(--surface3);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.sev-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--amber), #f97316);
+  border-radius: 100px;
+  transition: width 1.2s cubic-bezier(.16,1,.3,1) .5s;
+}
+
+/* ── Comparison table ── */
+.comp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+
+.comp-table th {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: .6rem 1rem;
+  text-align: center;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.comp-table th:first-child {
+  text-align: left;
+  border-radius: 12px 0 0 0;
+  border-left: 1px solid var(--border);
+}
+
+.comp-table th:last-child {
+  border-radius: 0 12px 0 0;
+  border-right: 1px solid var(--border);
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-top-color: var(--accent-border);
+  border-right-color: var(--accent-border);
+}
+
+.comp-table td {
+  padding: .7rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+}
+
+.comp-table td:first-child {
+  text-align: left;
+  color: var(--text);
+  font-weight: 500;
+  border-left: 1px solid var(--border);
+}
+
+.comp-table td:last-child {
+  border-right: 1px solid var(--accent-border);
+  background: rgba(167,139,250,0.04);
+}
+
+.comp-table tr:last-child td:first-child { border-radius: 0 0 0 12px; }
+.comp-table tr:last-child td:last-child { border-radius: 0 0 12px 0; border-bottom: 1px solid var(--accent-border); }
+.comp-table tr:last-child td { border-bottom: 1px solid var(--border); }
+.comp-table tr:last-child td:last-child { border-bottom: 1px solid var(--accent-border); }
+
+.cv-yes { color: var(--teal); font-weight: 600; }
+.cv-no { color: var(--red); opacity: .7; }
+.cv-partial { color: var(--amber); }
+.cv-first { color: var(--accent); font-weight: 600; }
+
+/* ── Footer ── */
+.footer {
+  margin-top: 5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: gap;
+  gap: 1rem;
+}
+
+.footer-brand {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.footer-brand strong { color: var(--accent); }
+
+.contribution-box {
+  background: var(--surface);
+  border: 1px solid var(--accent-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.cont-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.contribution-box h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: .35rem;
+}
+
+.contribution-box p {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .alert-stats { grid-template-columns: repeat(2, 1fr); }
+  .neg-stats { grid-template-columns: 1fr 1fr; }
+  .reg-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">Algorithm Explainer</div>
+    <h1>WNAR-SW:<br><em>Weighted Negative</em><br>Association Rules</h1>
+    <p class="hero-sub">A novel streaming algorithm for detecting dangerous drug interaction signals in real-time medical records — combining weighted support, regularity, and negative co-occurrence patterns.</p>
+    <div class="hero-pills">
+      <div class="pill accent">First to combine all four</div>
+      <div class="pill">Sliding window</div>
+      <div class="pill">Weighted regularity</div>
+      <div class="pill">Negative rules</div>
+    </div>
+  </div>
+
+  <!-- Problem -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Why standard Apriori fails</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="prob-grid">
+      <div class="prob-card">
+        <div class="prob-icon">⟳</div>
+        <h4>Rescans entire database</h4>
+        <p>Cannot work in real-time as new prescriptions arrive.</p>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">≡</div>
+        <h4>Ignores item importance</h4>
+        <p>"Headache" and "Cardiac Arrest" treated identically.</p>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">∅</div>
+        <h4>No negative rules</h4>
+        <p>Only finds what co-occurs, never what <em>doesn't</em>.</p>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">⚡</div>
+        <h4>No regularity check</h4>
+        <p>Burst patterns treated same as steady signals.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three Ideas -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Three novel ideas</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('weights', this)">Idea 1 — Weighted support</button>
+      <button class="tab-btn" onclick="switchTab('regularity', this)">Idea 2 — Weighted regularity</button>
+      <button class="tab-btn" onclick="switchTab('negative', this)">Idea 3 — Negative association</button>
+    </div>
+
+    <!-- Tab: Weights -->
+    <div id="tab-weights" class="tab-pane active">
+      <div class="idea-card">
+        <h3>Not all side effects are equal</h3>
+        <p>Every side effect receives a clinical weight ω ∈ (0, 1] based on severity. Weighted support boosts dangerous items and dampens trivial ones — so "Seizures" at 0.8% frequency survives pruning where standard Apriori would discard it.</p>
+        <div id="wbars" style="margin: 1.25rem 0;"></div>
+        <div class="formula">
+          wsup(X) = ω(X) × sup(X)<br>
+          <span class="cm">// Seizures at 0.8%: wsup = 1.0 × 0.008 = 0.008 — survives</span><br>
+          <span class="cm">// Flatulence at 13%: wsup = 0.18 × 0.13 = 0.023 — barely passes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Regularity -->
+    <div id="tab-regularity" class="tab-pane">
+      <div class="idea-card">
+        <h3>Consistent patterns matter more</h3>
+        <p>Regularity = maximum gap between consecutive appearances in the window. High-weight items must appear steadily to be trusted. The threshold is tightened by weight: <code style="font-family: var(--font-mono); font-size: 12px; color: var(--accent);">maxRegW(x) = maxReg × (1 − ω(x))</code></p>
+        <div class="reg-wrap">
+          <div class="reg-label">10 transactions — item X appears at positions 1, 4, 5, 9</div>
+          <div class="ticks-row" id="tick-row"></div>
+          <div class="reg-desc">Max gap = <b>4</b> — measures burstiness vs. steady signal. High regularity = unreliable.</div>
+        </div>
+        <div class="reg-grid">
+          <div class="reg-box">
+            <div class="rb-label">Seizures (ω = 1.0)</div>
+            <div class="rb-val" style="color: var(--red);">maxRegW = 0</div>
+            <div class="rb-sub">must appear in every gap</div>
+          </div>
+          <div class="reg-box">
+            <div class="rb-label">Diarrhea (ω = 0.55)</div>
+            <div class="rb-val" style="color: var(--blue);">maxRegW = 270</div>
+            <div class="rb-sub">moderate tolerance</div>
+          </div>
+          <div class="reg-box">
+            <div class="rb-label">Headache (ω = 0.30)</div>
+            <div class="rb-val" style="color: var(--teal);">maxRegW = 420</div>
+            <div class="rb-sub">high tolerance</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Negative -->
+    <div id="tab-negative" class="tab-pane">
+      <div class="idea-card">
+        <h3>What doesn't co-occur, weighted by danger</h3>
+        <p>For retained items A and B, measure how often A appears <em>without</em> B. Two dangerous items avoiding each other scores far higher than two mild ones avoiding each other.</p>
+        <div class="formula">
+          wNegSup(A → ¬B) = ω(A) × ω(B) × (sup(A) − sup(A∪B))<br>
+          wNegConf = wNegSup / wsup(A)<br>
+          severity = wNegConf × (ω(A) + ω(B)) / 2
+        </div>
+        <div class="neg-rule">Abdominal pain → NOT Allergic reaction</div>
+        <div class="neg-stats">
+          <div class="neg-stat">
+            <div class="ns-label">Weighted neg. confidence</div>
+            <div class="ns-val">0.799</div>
+            <div class="ns-sub">80% weighted probability of non-co-occurrence</div>
+          </div>
+          <div class="neg-stat">
+            <div class="ns-label">Severity score</div>
+            <div class="ns-val">0.539</div>
+            <div class="ns-sub">both items clinically significant (ω = 0.55, 0.80)</div>
+          </div>
+        </div>
+        <p style="font-size: 13px; color: var(--text2);">Joint support is only 0.03% — these two serious side effects almost never appear together, flagging a potential contraindication alert.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">How the algorithm runs</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="pipeline" id="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-badge a">A</div>
+        <div class="pipe-content">
+          <h4>Process A — Initialization</h4>
+          <p>Read historical records, assign severity weights from clinical table, build inverted index: item → {tid_list, ω, regularity}.</p>
+        </div>
+      </div>
+      <div class="pipe-line"></div>
+      <div class="pipe-step">
+        <div class="pipe-badge b">B</div>
+        <div class="pipe-content">
+          <h4>Process B — Sliding window (last 3,000 records)</h4>
+          <p>New record arrives → oldest is evicted. Update tid_lists, recompute regularity, prune items failing weighted support or weighted regularity thresholds.</p>
+          <div class="pipe-tag">19 of 370 items survive</div>
+        </div>
+      </div>
+      <div class="pipe-line"></div>
+      <div class="pipe-step">
+        <div class="pipe-badge c">C</div>
+        <div class="pipe-content">
+          <h4>Process C — Alert detection</h4>
+          <p>For every pair (A, B) of retained items: compute joint support via BitSet intersection. If they rarely co-occur, compute wNegSup, wNegConf, severity score. Emit and sort alerts by severity.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Top alert from real data</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="alert-card">
+      <div class="alert-header">
+        <div class="alert-pulse"></div>
+        <span class="alert-title">DRUG INTERACTION SIGNAL DETECTED</span>
+      </div>
+      <div class="alert-body">
+        <div class="neg-rule-red">Abdominal pain → NOT Allergic reaction</div>
+        <div class="alert-stats">
+          <div class="alert-stat">
+            <div class="as-l">sup(Abdominal pain)</div>
+            <div class="as-v">17.7%</div>
+          </div>
+          <div class="alert-stat">
+            <div class="as-l">sup(Allergic reaction)</div>
+            <div class="as-v">10.9%</div>
+          </div>
+          <div class="alert-stat">
+            <div class="as-l">Joint support</div>
+            <div class="as-v">0.03%</div>
+          </div>
+          <div class="alert-stat">
+            <div class="as-l">wNegConf</div>
+            <div class="as-v">0.799</div>
+          </div>
+        </div>
+        <div class="sev-label">
+          <span>Severity score</span>
+          <span id="sev-num">0.539</span>
+        </div>
+        <div class="sev-track">
+          <div class="sev-fill" id="sev-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">What makes this novel</h2>
+      <div class="section-rule"></div>
+    </div>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Apriori</th>
+          <th>Jammalamadaka</th>
+          <th>MWAR-SW</th>
+          <th>WNAR-SW ★</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Streaming window</td>
+          <td class="cv-no">No</td>
+          <td class="cv-yes">Yes</td>
+          <td class="cv-yes">Yes</td>
+          <td class="cv-first">Yes</td>
+        </tr>
+        <tr>
+          <td>Weights</td>
+          <td class="cv-no">No</td>
+          <td class="cv-no">No</td>
+          <td class="cv-yes">Yes</td>
+          <td class="cv-first">Yes</td>
+        </tr>
+        <tr>
+          <td>Negative rules</td>
+          <td class="cv-no">No</td>
+          <td class="cv-yes">Yes</td>
+          <td class="cv-no">No</td>
+          <td class="cv-first">Yes</td>
+        </tr>
+        <tr>
+          <td>Weighted regularity</td>
+          <td class="cv-no">No</td>
+          <td class="cv-partial">Flat only</td>
+          <td class="cv-no">No</td>
+          <td class="cv-first">Yes (weighted)</td>
+        </tr>
+        <tr>
+          <td>All four combined</td>
+          <td class="cv-no">—</td>
+          <td class="cv-no">—</td>
+          <td class="cv-no">—</td>
+          <td class="cv-first">First to do this</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="contribution-box">
+      <div class="cont-icon">◈</div>
+      <div>
+        <h4>The core contribution</h4>
+        <p>No prior work combines weighted support + weighted regularity + negative rules + sliding window. WNAR-SW is the first algorithm to unify all four, enabling clinically-aware, real-time, bidirectional pattern mining on medical event streams.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand"><strong>WNAR-SW</strong> — Weighted Negative Association Rules on Sliding Windows</div>
+  </div>
+
+</div>
+
+<script>
+// Weight bars
+const weights = [
+  { label: 'Seizures', val: 1.00 },
+  { label: 'Allergic reaction', val: 0.80 },
+  { label: 'Diarrhea', val: 0.55 },
+  { label: 'Headache', val: 0.30 },
+  { label: 'Flatulence', val: 0.18 },
+];
+const wbarsEl = document.getElementById('wbars');
+weights.forEach(w => {
+  const row = document.createElement('div');
+  row.className = 'wbar-row';
+  row.innerHTML = `
+    <span class="wbar-label">${w.label}</span>
+    <div class="wbar-track"><div class="wbar-fill" data-w="${w.val * 100}" style="width:0%"></div></div>
+    <span class="wbar-val">${w.val.toFixed(2)}</span>
+  `;
+  wbarsEl.appendChild(row);
+});
+
+// Regularity ticks
+const hits = [1, 4, 5, 9];
+const tickRow = document.getElementById('tick-row');
+for (let i = 1; i <= 10; i++) {
+  const t = document.createElement('div');
+  t.className = 'tick' + (hits.includes(i) ? ' hit' : '');
+  t.textContent = i;
+  tickRow.appendChild(t);
+  if (i < 10) {
+    const s = document.createElement('span');
+    s.className = 'tick-sep';
+    s.textContent = '–';
+    tickRow.appendChild(s);
+  }
+}
+
+// Tab switching
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Intersection Observer for animations
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // Animate weight bars
+      if (entry.target.id === 'tab-weights' || entry.target.closest('#tab-weights')) {
+        document.querySelectorAll('.wbar-fill').forEach(el => {
+          el.style.width = el.dataset.w + '%';
+        });
+      }
+      // Animate severity bar
+      if (entry.target.classList.contains('sev-fill')) {
+        setTimeout(() => { entry.target.style.width = '53.9%'; }, 100);
+      }
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.pipe-step').forEach((el, i) => {
+  el.style.transitionDelay = (i * 0.12) + 's';
+  io.observe(el);
+});
+
+io.observe(document.getElementById('sev-fill'));
+
+// Animate weight bars when tab is visible
+const weightObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      setTimeout(() => {
+        document.querySelectorAll('.wbar-fill').forEach(el => {
+          el.style.width = el.dataset.w + '%';
+        });
+      }, 200);
+      weightObs.disconnect();
+    }
+  });
+}, { threshold: 0.1 });
+weightObs.observe(document.getElementById('tab-weights'));
+</script>
+</body>
+</html>
