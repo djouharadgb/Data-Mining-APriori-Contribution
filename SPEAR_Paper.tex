@@ -157,11 +157,10 @@
 }
 
 \author{%
-  \textbf{Djouhara Deghbar}  \textbf{Nesrine Dekkiche}\\[4pt]
+  \textbf{Djouhra Deghbar,}  \textbf{Nesrine Dekkiche}\\[4pt]
   \small Department of Computer Science\\
-  \small USTHB --- University of Science and Technology Houari Boumediene
+  \small University of Science and Technology Houari Boumediene
 }
-
 
 % ════════════════════════════════════════════════════════════
 \begin{document}
@@ -177,8 +176,8 @@
     but ignore item significance; others incorporate clinical weights but
     produce only positive rules; and those that enforce temporal regularity
     rely on a fragile max-gap metric that a single outlier gap can invalidate.
-    No prior algorithm addresses all four requirements --- streaming,
-    negative associations, clinical weighting, and robust regularity ---
+    No prior algorithm addresses all four requirements ( streaming,
+    negative associations, clinical weighting, and robust regularity)
     in a unified framework.
     %
     This paper proposes \textbf{SPEAR} (Streaming Positive-nEgative
@@ -199,7 +198,7 @@
     $K \leq 30$ (vs.\ $0.0$--$0.27$ for the nearest competitor),
     a mean clinical weight of $0.665$ in its top-10 rules (vs.\ $0.374$),
     and runs $37\times$ faster than MWAR-SW while producing 256 unified
-    rules --- all without a single tunable regularity parameter.
+    rules, all without a single tunable regularity parameter.
     \par\medskip
     \noindent
     \textbf{Keywords:} association rule mining, negative associations,
@@ -223,11 +222,11 @@ the classical Apriori algorithm has four structural limitations that
 make it unsuitable for this task:
 
 \begin{enumerate}[label=\textbf{L\arabic*.}, leftmargin=*, itemsep=2pt]
-  \item \textbf{Iterative scanning} --- incompatible with data streams.
-  \item \textbf{Positive-only rules} --- dangerous absences are invisible.
-  \item \textbf{Uniform item significance} --- a lethal interaction can
+  \item \textbf{Iterative scanning:} incompatible with data streams.
+  \item \textbf{Positive-only rules:} dangerous absences are invisible.
+  \item \textbf{Uniform item significance:} a lethal interaction can
         be pruned identically to a harmless one.
-  \item \textbf{No temporal regularity} --- sporadic coincidences are
+  \item \textbf{No temporal regularity:} sporadic coincidences are
         conflated with sustained patterns.
 \end{enumerate}
 
@@ -238,7 +237,7 @@ clinical weighting.
 Ouyang and Huang~\cite{ouyang2015} add weighted support to sliding-window
 mining (L1, L3) but handle only positive rules and use no regularity
 constraint.
-Neither tackles all four, and both rely on max-gap regularity --- a
+Neither tackles all four, and both rely on max-gap regularity, a
 metric that a single outlier gap can invalidate.
 
 \subsection{Contributions}
@@ -251,7 +250,7 @@ SPEAR closes this gap with two innovations:
         Replaces the fragile max-gap metric with normalised Shannon
         entropy of the inter-occurrence gap distribution, producing a
         score in $[0,1]$.
-        The per-item threshold is simply $\omega(x)$ --- eliminating
+        The per-item threshold is simply $\omega(x)$ , eliminating
         the \texttt{maxReg} parameter entirely.
 
   \item \textbf{Unified positive + negative mining}
@@ -373,7 +372,7 @@ $p_i = g_i / \sum g_j$.
 \begin{tcolorbox}[notebox]
 \textbf{Why entropy instead of max-gap?}
 Max-gap regularity fails when a single large gap exists among
-otherwise perfectly regular occurrences --- the entire item is
+otherwise perfectly regular occurrences, so the entire item is
 rejected.
 Entropy captures the \emph{full distribution}: a perfectly regular
 item ($\regscore = 1.0$) has uniform gaps;
@@ -394,8 +393,7 @@ This threshold is self-adaptive: a high-weight item (e.g.,
 $\omega = 0.90$) must be highly regular ($\regscore \geq 0.90$),
 while a low-weight item ($\omega = 0.20$) passes with modest
 regularity.
-Critically, this \textbf{eliminates the \texttt{maxReg} parameter}
---- the weight \emph{is} the threshold.
+Critically, this \textbf{eliminates the \texttt{maxReg} parameter}. The weight \emph{is} the threshold.
 
 \subsection{Weighted Negative and Positive Measures}
 
@@ -438,7 +436,7 @@ where $\mathit{metric}(R) = \wNegConf$ for negative rules and
 $\mathit{metric}(R) = \wconf$ for positive rules.
 \end{definition}
 
-All rules --- positive and negative --- are sorted by
+All rules, positive and negative, are sorted by
 $\mathit{sev}(\cdot)$ in a single output list, enabling clinicians
 to see the most dangerous interactions first regardless of rule type.
 
@@ -584,7 +582,7 @@ Key observations from \cref{tab:results}:
 
 \begin{itemize}[leftmargin=*]
   \item \textbf{Clinical relevance.}
-        SPEAR's top-10 rules have mean clinical weight 0.665 --- 70\%
+        SPEAR's top-10 rules have mean clinical weight 0.665, so 70\%
         higher than Apriori (0.390) and 78\% higher than
         Jammalamadaka (0.374).
         The severity ranking ensures the most dangerous interactions
@@ -596,7 +594,7 @@ Key observations from \cref{tab:results}:
         No other algorithm produces both rule types.
 
   \item \textbf{Speed.}
-        SPEAR runs in 0.006\,s --- $37\times$ faster than MWAR-SW
+        SPEAR runs in 0.006\,s, so $37\times$ faster than MWAR-SW
         (0.224\,s) and comparable to Jammalamadaka (0.007\,s).
 
   \item \textbf{Selective retention.}
@@ -611,7 +609,7 @@ Key observations from \cref{tab:results}:
 SPEAR retains 2 items invisible to Jammalamadaka: items with low raw
 frequency but high clinical weight that pass the weighted support
 threshold.
-Conversely, Jammalamadaka retains 4 items that SPEAR prunes ---
+Conversely, Jammalamadaka retains 4 items that SPEAR prunes;
 items with sufficient raw frequency but whose occurrence pattern
 fails the entropy-regularity test for their weight class.
 This demonstrates that SPEAR's filtering is more clinically
@@ -620,7 +618,7 @@ tightening regularity requirements.
 
 \subsection{Precision@K: Clinical Relevance of Top-K Rules}
 
-\Cref{fig:precision} shows Precision@K --- the fraction of each
+\Cref{fig:precision} shows Precision@K, the fraction of each
 algorithm's top-$K$ rules that involve at least one clinically
 severe side effect ($\omega \geq 0.65$).
 
@@ -655,7 +653,7 @@ unified rule space.
   \textbf{Row 2 (left):} SPEAR's unified severity distribution showing
   both positive (green) and negative (red) rules.
   \textbf{Row 2 (centre):} entropy regularity score vs.\ max-gap distance,
-  coloured by clinical weight --- items in the upper-left have high
+  coloured by clinical weight, items in the upper-left have high
   entropy regularity despite moderate max-gap values, showing where
   entropy succeeds and max-gap would fail.
   \textbf{Row 2 (right):} runtime comparison.
@@ -671,12 +669,12 @@ unified rule space.
 The centre panel of Row~2 in \cref{fig:comparison} visualises the
 key insight.
 Items with high entropy ($\regscore > 0.8$) can have widely varying
-max-gap values --- some have max-gap $> 1{,}500$ yet are still
+max-gap values, some have max-gap $> 1{,}500$ yet are still
 highly regular in their overall distribution.
 Max-gap regularity would reject these items; entropy retains them.
 
 Conversely, items with low entropy but moderate max-gap are those
-whose occurrences cluster in one region of the window ---
+whose occurrences cluster in one region of the window,
 precisely the ``sporadic burst'' pattern that regularity should
 filter.
 Entropy detects this correctly.
@@ -727,7 +725,7 @@ SPEAR:
   \item Produces a \textbf{78\% higher mean clinical weight} in its
         top-10 rules compared to Jammalamadaka;
   \item Runs \textbf{$37\times$ faster} than MWAR-SW;
-  \item Eliminates the \texttt{maxReg} parameter --- the clinical
+  \item Eliminates the \texttt{maxReg} parameter, the clinical
         weight \emph{is} the regularity threshold;
   \item Produces \textbf{unified positive and negative rules} in a
         single ranked output.
@@ -746,8 +744,7 @@ and validation on de-identified clinical prescription streams.
 %  ACKNOWLEDGEMENTS
 % ─────────────────────────────────────────────────────────────
 \section*{Acknowledgements}
-The authors thank [Supervisor Name] for guidance and the Department of
-Computer Science at USTHB for computational resources.
+The authors thank Professor Necir for his support and guidance.
 
 % ─────────────────────────────────────────────────────────────
 %  REFERENCES
